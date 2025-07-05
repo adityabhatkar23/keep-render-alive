@@ -1,0 +1,14 @@
+name: Keep Render Alive
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # every 15 minutes
+  workflow_dispatch:        # allow manual run too
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping your Render backend
+        run: |
+          curl -I https://thoughtshare.onrender.com/ || echo "Ping failed"
