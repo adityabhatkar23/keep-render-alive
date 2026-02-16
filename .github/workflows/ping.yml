@@ -2,13 +2,28 @@ name: Keep Render Alive
 
 on:
   schedule:
-    - cron: '*/10 * * * *'  # every 15 minutes
-  workflow_dispatch:        # allow manual run too
+    - cron: "*/10 4-20 * * *"
+  workflow_dispatch:       
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping your Render backend
+      - name: Ping Websites
         run: |
-          curl -I https://thoughtshare.onrender.com/ || echo "Ping failed"
+          SITES=(
+            "https://sync-watch-jo2i.onrender.com/health"
+            "https://thoughtshare.onrender.com/health"
+          )
+
+          for SITE in "${SITES[@]}"
+          do
+            echo "Pinging $SITE"
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" $SITE)
+            echo "Status: $STATUS"
+
+            if [ "$STATUS" -ne 200 ]; then
+              echo "$SITE is down!"
+              exit 1
+            fi
+          done
