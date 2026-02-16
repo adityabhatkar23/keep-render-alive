@@ -5,25 +5,11 @@ on:
     - cron: "*/10 4-20 * * *"
   workflow_dispatch:       
 
+
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Websites
+      - name: Ping your Render backend
         run: |
-          SITES=(
-            "https://sync-watch-jo2i.onrender.com/health"
-            "https://thoughtshare.onrender.com/health"
-          )
-
-          for SITE in "${SITES[@]}"
-          do
-            echo "Pinging $SITE"
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" $SITE)
-            echo "Status: $STATUS"
-
-            if [ "$STATUS" -ne 200 ]; then
-              echo "$SITE is down!"
-              exit 1
-            fi
-          done
+          curl -s https://sync-watch-jo2i.onrender.com/health || echo "Ping failed"
